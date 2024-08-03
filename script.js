@@ -21,18 +21,23 @@ let birdObj = {
 //Variables for obstacles.
 let topPipes = [];
 let topPipeImg;
-let topPipeX = areaWidth + 2;
+let topPipeX = areaWidth;
 let topPipeY = 0;
 let topPipeWidth = 64;
 let topPipeHeight = 512;
 
 let downPipes = [];
 let downPipeImg;
-let downPipeX = areaWidth + 2;
+let downPipeX = areaWidth;
 let downPipeY = 0;
 let downPipeWidth = 64;
 let downPipeHeight = 512;
 
+
+//Other game physics parameters
+let velocityX = -1;
+let velocityY = 0;
+let gravity = -0.5;
 
 window.onload = ()=>{
     //Setting the parameters for the canvas.
@@ -55,29 +60,38 @@ window.onload = ()=>{
     topPipeImg.src = "./images/toppipe.png";
 
     downPipeImg = new Image();
-    downPipeImg.src = "./images/downpipe.png";
+    downPipeImg.src = "./images/bottompipe.png";
     
-    //Drawing obstacles;
-    for(let i=0; i<topPipes.length(); i++){ 
-        //Drawing top obstacles.
-        context.drawImage(topPipes[i].img, topPipes[i].x, topPipes[i].y);
-        //Drawing down obstacles.
-        context.drawImage(downPipes[i].img, downPipes[i].x, downPipes[i].y); 
-    }
-
     requestAnimationFrame(updateFrames);
     setInterval(placeObstacles, 2000);
-    document.addEventListener("keydown", (e)=>{
-        moveBird(e);
-    });
 };
+
+function updateFrames(){
+    //draw the animation repeatealy
+    //clear the previous frame.
+    requestAnimationFrame(updateFrames);
+    context.clearRect(0, 0, areaWidth, areaHeight);
+
+    context.drawImage(bird, birdX, birdY, birdWidth, birdHeight);
+
+    //Draw the pipes.
+    for(let i=0; i<topPipes.length; i++){
+        topPipes[i].x += velocityX;
+        downPipes[i].x += velocityX; 
+        //Drawing top obstacles.
+        context.drawImage(topPipes[i].img, topPipes[i].x, topPipes[i].y, topPipes[i].width, topPipes[i].height);
+        //Drawing down obstacles.
+        context.drawImage(downPipes[i].img, downPipes[i].x, downPipes[i].y, downPipes[i].width, downPipes[i].height); 
+    }
+
+}
 
 function placeObstacles(){
 
     //Parameters to draw the top pipe.
     let pipeX = topPipeX;
     let pipeY = topPipeY - areaHeight/4 - Math.random()*(areaHeight/2);
-    let space = areaHeight/2;
+    let space = areaHeight/6;
 
     //defining the top obstacle
     let top = {

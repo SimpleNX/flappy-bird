@@ -10,13 +10,7 @@ let birdHeight = 24;
 let birdWidth = 34;
 let birdX = areaHeight/10;
 let birdY = areaHeight/2;
-let birdObj = {
-    bird,
-    x : birdX,
-    y : birdY,
-    height : birdHeight,
-    width : birdWidth,
-};
+let birdObj = {};
 
 //Variables for obstacles.
 let topPipes = [];
@@ -37,7 +31,7 @@ let downPipeHeight = 512;
 //Other game physics parameters
 let velocityX = -1;
 let velocityY = 0;
-let gravity = -0.5;
+let gravity = 0.1;
 
 window.onload = ()=>{
     //Setting the parameters for the canvas.
@@ -49,6 +43,13 @@ window.onload = ()=>{
     //everytime the page loads, the bird needs to be drawn after being load.
     bird = new Image();
     bird.src = "./images/flappybird.png";
+    birdObj = {
+        bird,
+        x : birdX,
+        y : birdY,
+        height : birdHeight,
+        width : birdWidth,
+    };
     bird.onload = ()=>{
         context.drawImage(bird, birdX, birdY, birdWidth, birdHeight);
     };
@@ -64,6 +65,8 @@ window.onload = ()=>{
     
     requestAnimationFrame(updateFrames);
     setInterval(placeObstacles, 2000);
+    //Adding a event listener to change the y value of bird.
+    document.addEventListener("keydown", changeBirdPos);
 };
 
 function updateFrames(){
@@ -72,7 +75,11 @@ function updateFrames(){
     requestAnimationFrame(updateFrames);
     context.clearRect(0, 0, areaWidth, areaHeight);
 
-    context.drawImage(bird, birdX, birdY, birdWidth, birdHeight);
+
+    // Adding velocityY and gravity to the y position.
+    velocityY += gravity;
+    birdObj.y += velocityY;
+    context.drawImage(birdObj.bird, birdObj.x, birdObj.y, birdObj.width, birdObj.height);
 
     //Draw the pipes.
     for(let i=0; i<topPipes.length; i++){
@@ -81,7 +88,10 @@ function updateFrames(){
         //Drawing top obstacles.
         context.drawImage(topPipes[i].img, topPipes[i].x, topPipes[i].y, topPipes[i].width, topPipes[i].height);
         //Drawing down obstacles.
-        context.drawImage(downPipes[i].img, downPipes[i].x, downPipes[i].y, downPipes[i].width, downPipes[i].height); 
+        context.drawImage(downPipes[i].img, downPipes[i].x, downPipes[i].y, downPipes[i].width, downPipes[i].height);
+        
+        
+        //Collision detection.
     }
 
 }
@@ -115,4 +125,14 @@ function placeObstacles(){
         pass : false,
     }
     downPipes.push(down);
+}
+
+function changeBirdPos(e){
+    if(e.code == "Space" || e.code == "Enter"){
+        velocityY = -6;
+    }
+    if(birdObj.y <= 0){
+        velocityY = 0;
+        birdObj.y = 0;
+    }
 }

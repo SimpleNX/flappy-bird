@@ -6,7 +6,7 @@ body{
     background-image : url("./images/flappybirdbg.png");
 }
 
-#score{
+#score, #message{
     box-sizing: border-box;
     width : 60px;
     height :  60px;

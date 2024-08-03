@@ -49,7 +49,7 @@ document.addEventListener("keydown", (event)=>{
     }
 });
 
-window.onload = ()=>{
+window.onload = ()=>{//Setting the starting screen of the page onload.
     //Setting the parameters for the canvas.
     area = document.querySelector("#playarea");
     score = document.querySelector("#score");
@@ -119,10 +119,16 @@ function updateFrames(){
 
         if(topPipes[i].x + topPipes[i].width < birdObj.x){
             //The bird has passed the pipe if only it passes the pipes and cross the xcoordinates.
+            //These denote that the bird has passed these obstacles already.;
             topPipes[i].birdPass = true;
             downPipes[i].birdPass = true;
         }
-        //These denote that the bird has passed these obstacles already.;
+
+        //Removing obstacles if they have crossed the play area to the left of it.
+        if(topPipes[i].x + topPipes[i].width < 0){
+            topPipes.shift();
+            downPipes.shift()
+        }
     }
 
 }
@@ -165,7 +171,7 @@ function changeBirdPos(event){
     if(gameState === "Finished")
         return;
     if(event.code == "Space" || event.code == "KeyW"){
-        velocityY = -6;
+        velocityY = -6; //Random velocity in y to lift the bird.
     }
     if(birdObj.y <= 0){
         velocityY = 0;

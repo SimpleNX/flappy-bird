@@ -10,3 +10,9 @@ Show the background, draw the bird on the default coordinates.
 
 ## The main game loop ()
 Everytime, draw Animation and clear the previous frame.
+
+## Collision Detection
+Everytime the obstacles are made, right after it should be checked if there has been collision between bird and it.
+Also touching the bottom counts as collision.
+Any collision results in the game to end.
+Set gameState = finisied when either of these occur.

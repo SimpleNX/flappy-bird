@@ -3,6 +3,8 @@
 let area, context;
 let areaHeight = 640;
 let areaWidth = 360;
+let gameState;
+let score;
 
 //Variables for bird
 let bird;
@@ -33,12 +35,28 @@ let velocityX = -1;
 let velocityY = 0;
 let gravity = 0.1;
 
+//The game starts if the enter key is pressed.
+document.addEventListener("keydown", (event)=>{
+    if(event.code === "Enter"){
+        //Game starts
+        gameState = "Start";
+        if(gameState === "Start"){
+            requestAnimationFrame(updateFrames);
+            setInterval(placeObstacles, 2000);
+            //Adding a event listener to change the y value of bird.
+            document.addEventListener("keydown", changeBirdPos);
+        }
+    }
+});
+
 window.onload = ()=>{
     //Setting the parameters for the canvas.
     area = document.querySelector("#playarea");
+    score = document.querySelector("#score");
     area.width = areaWidth;
     area.height = areaHeight;
     context = area.getContext("2d");
+    gameState = "Start";
 
     //everytime the page loads, the bird needs to be drawn after being load.
     bird = new Image();
@@ -62,14 +80,11 @@ window.onload = ()=>{
 
     downPipeImg = new Image();
     downPipeImg.src = "./images/bottompipe.png";
-    
-    requestAnimationFrame(updateFrames);
-    setInterval(placeObstacles, 2000);
-    //Adding a event listener to change the y value of bird.
-    document.addEventListener("keydown", changeBirdPos);
 };
 
 function updateFrames(){
+    if(gameState === "Finished")
+        return;
     //draw the animation repeatealy
     //clear the previous frame.
     requestAnimationFrame(updateFrames);
@@ -80,6 +95,10 @@ function updateFrames(){
     velocityY += gravity;
     birdObj.y += velocityY;
     context.drawImage(birdObj.bird, birdObj.x, birdObj.y, birdObj.width, birdObj.height);
+    if(birdObj.y >= areaHeight){
+        gameState = "Finished";
+        return;
+    }
 
     //Draw the pipes.
     for(let i=0; i<topPipes.length; i++){
@@ -92,11 +111,24 @@ function updateFrames(){
         
         
         //Collision detection.
+        if(checkCollision(bird, topPipes[i]) || checkCollision(bird, downPipes[i])){
+            gameState = "Finished";
+            return;
+        }else if(!topPipes[i].birdPass){//The else handles the state when there is no collision.
+            score.textContent = +score.textContent + 1;
+        }
+
+        //These denote that the bird has passed these obstacles already.
+        topPipes[i].birdPass = true;
+        downPipes[i].birdPass = true;
     }
 
 }
 
 function placeObstacles(){
+
+    if(gameState === "Finished")
+        return;
 
     //Parameters to draw the top pipe.
     let pipeX = topPipeX;
@@ -110,8 +142,9 @@ function placeObstacles(){
         y : pipeY,
         height : topPipeHeight,
         width : topPipeWidth,
+        birdPass : false,
         pass : false,
-    }
+    };
     topPipes.push(top);
 
     pipeY += space + areaHeight;
@@ -122,17 +155,30 @@ function placeObstacles(){
         y : pipeY,
         height : downPipeHeight, 
         width : downPipeWidth,
+        birdPass : false,
         pass : false,
-    }
+    };
     downPipes.push(down);
 }
 
 function changeBirdPos(e){
-    if(e.code == "Space" || e.code == "Enter"){
+    if(gameState === "Finished")
+        return;
+    if(e.code == "Space" || e.code == "KeyW"){
         velocityY = -6;
     }
     if(birdObj.y <= 0){
         velocityY = 0;
         birdObj.y = 0;
     }
+}
+
+function checkCollision(bird, pipe){
+    //Collision between bird and pipe occurs, when they merge in area, basically overlap
+    //So if there is overlap of the bird and pipe there is collision.
+    let birdPosX = bird.x + bird.width;
+    let birdPosY = bird.y + bird.height;
+
+    // return ((bird.x < pipe.x + pipe.width) && (birdPosX > pipe.x)) && ((birdPosY > pipe.y) && (bird.y < pipe.y + pipe.height));
+    return false;
 }

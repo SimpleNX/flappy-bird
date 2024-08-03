@@ -108,8 +108,7 @@ function updateFrames(){
         context.drawImage(topPipes[i].img, topPipes[i].x, topPipes[i].y, topPipes[i].width, topPipes[i].height);
         //Drawing down obstacles.
         context.drawImage(downPipes[i].img, downPipes[i].x, downPipes[i].y, downPipes[i].width, downPipes[i].height);
-        
-        
+
         //Collision detection.
         if(checkCollision(bird, topPipes[i]) || checkCollision(bird, downPipes[i])){
             gameState = "Finished";
@@ -176,9 +175,9 @@ function changeBirdPos(e){
 function checkCollision(bird, pipe){
     //Collision between bird and pipe occurs, when they merge in area, basically overlap
     //So if there is overlap of the bird and pipe there is collision.
-    let birdPosX = bird.x + bird.width;
-    let birdPosY = bird.y + bird.height;
+    let collisionX = bird.x < (pipe.x + pipe.width) && (bird.x + bird.width) > pipe.x;
+    let collisionY = bird.y < (pipe.y + pipe.height) && (bird.y + bird.height) > pipe.y;
 
-    // return ((bird.x < pipe.x + pipe.width) && (birdPosX > pipe.x)) && ((birdPosY > pipe.y) && (bird.y < pipe.y + pipe.height));
-    return false;
+
+    return (collisionX && collisionY);
 }

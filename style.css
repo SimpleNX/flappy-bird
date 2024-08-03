@@ -5,3 +5,14 @@ body{
 #playarea{
     background-image : url("./images/flappybirdbg.png");
 }
+
+#score{
+    box-sizing: border-box;
+    width : 60px;
+    height :  60px;
+    margin-top : 2rem;
+    margin-left : auto;
+    margin-right : auto;
+    font-size: 40px;
+    border : 2px solid black;
+}

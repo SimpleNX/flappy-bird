@@ -110,16 +110,19 @@ function updateFrames(){
         context.drawImage(downPipes[i].img, downPipes[i].x, downPipes[i].y, downPipes[i].width, downPipes[i].height);
 
         //Collision detection.
-        if(checkCollision(bird, topPipes[i]) || checkCollision(bird, downPipes[i])){
+        if(checkCollision(birdObj, topPipes[i]) || checkCollision(birdObj, downPipes[i])){
             gameState = "Finished";
             return;
-        }else if(!topPipes[i].birdPass){//The else handles the state when there is no collision.
-            score.textContent = +score.textContent + 1;
+        }else if(!topPipes[i].birdPass && (topPipes[i].x + topPipes[i].width <= birdObj.x)){//The else handles the state when there is no collision.
+            score.textContent = +score.textContent + 0.5;
         }
 
-        //These denote that the bird has passed these obstacles already.
-        topPipes[i].birdPass = true;
-        downPipes[i].birdPass = true;
+        if(topPipes[i].x + topPipes[i].width < birdObj.x){
+            //The bird has passed the pipe if only it passes the pipes and cross the xcoordinates.
+            topPipes[i].birdPass = true;
+            downPipes[i].birdPass = true;
+        }
+        //These denote that the bird has passed these obstacles already.;
     }
 
 }
@@ -142,7 +145,6 @@ function placeObstacles(){
         height : topPipeHeight,
         width : topPipeWidth,
         birdPass : false,
-        pass : false,
     };
     topPipes.push(top);
 
@@ -155,15 +157,14 @@ function placeObstacles(){
         height : downPipeHeight, 
         width : downPipeWidth,
         birdPass : false,
-        pass : false,
     };
     downPipes.push(down);
 }
 
-function changeBirdPos(e){
+function changeBirdPos(event){
     if(gameState === "Finished")
         return;
-    if(e.code == "Space" || e.code == "KeyW"){
+    if(event.code == "Space" || event.code == "KeyW"){
         velocityY = -6;
     }
     if(birdObj.y <= 0){
@@ -175,9 +176,10 @@ function changeBirdPos(e){
 function checkCollision(bird, pipe){
     //Collision between bird and pipe occurs, when they merge in area, basically overlap
     //So if there is overlap of the bird and pipe there is collision.
+    
+    //Check if the bird has passed the pipe or not, if the bird has already passed pipe, there would be no collision.
     let collisionX = bird.x < (pipe.x + pipe.width) && (bird.x + bird.width) > pipe.x;
     let collisionY = bird.y < (pipe.y + pipe.height) && (bird.y + bird.height) > pipe.y;
 
-
-    return (collisionX && collisionY);
+    return (collisionX && collisionY && !pipe.birdPass);
 }

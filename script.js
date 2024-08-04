@@ -1,3 +1,7 @@
+let enter;
+let up;
+let refresh;
+
 
 //Variables for play area parameters.
 let area, context;
@@ -37,20 +41,15 @@ let gravity = 0.1;
 
 //The game starts if the enter key is pressed.
 document.addEventListener("keydown", (event)=>{
-    if(event.code === "Enter"){
-        //Game starts
-        gameState = "Start";
-        if(gameState === "Start"){
-            requestAnimationFrame(updateFrames);
-            setInterval(placeObstacles, 2000);
-            //Adding a event listener to change the y value of bird.
-            document.addEventListener("keydown", changeBirdPos);
-        }
-    }
+    playGame(event.code);
 });
 
 window.onload = ()=>{//Setting the starting screen of the page onload.
     //Setting the parameters for the canvas.
+    enter = document.querySelector("#Enter");
+// console.log(enter);
+    up = document.querySelector("#Space");
+    refresh = document.querySelector("#Reset");
     area = document.querySelector("#playarea");
     score = document.querySelector("#score");
     area.width = areaWidth;
@@ -80,7 +79,29 @@ window.onload = ()=>{//Setting the starting screen of the page onload.
 
     downPipeImg = new Image();
     downPipeImg.src = "./images/bottompipe.png";
+
+    enter.addEventListener("click", ()=>{
+        playGame("Enter");
+    });
+
+    refresh.addEventListener("click", ()=>{
+        location.reload();
+    });
 };
+
+function playGame(event){
+    if(event === "Enter"){
+        //Game starts
+        gameState = "Start";
+        if(gameState === "Start"){
+            requestAnimationFrame(updateFrames);
+            setInterval(placeObstacles, 2000);
+            //Adding a event listener to change the y value of bird.
+            document.addEventListener("keydown", changeBirdPos);
+            up.addEventListener("click", changeBirdPos);
+        }
+    }
+}
 
 function updateFrames(){
     if(gameState === "Finished")
